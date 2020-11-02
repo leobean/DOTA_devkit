@@ -7,6 +7,7 @@ import cv2
 import shapely.geometry as shgeo
 import dota_utils as util
 import copy
+import argparse
 
 def choose_best_pointorder_fit_another(poly1, poly2):
     """
@@ -36,7 +37,7 @@ class splitbase():
                  basepath,
                  outpath,
                  code = 'utf-8',
-                 gap=100,
+                 gap=200,
                  subsize=1024,
                  thresh=0.7,
                  choosebestpoint=True,
@@ -240,6 +241,9 @@ class splitbase():
 
 if __name__ == '__main__':
     # example usage of ImgSplit
-    split = splitbase(r'example',
-                       r'examplesplit')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--source', help='which folder need to split.')
+    parser.add_argument('--split', help='location of img/label after split')
+    args=parser.parse_args()
+    split = splitbase(args.source, args.split)
     split.splitdata(1)

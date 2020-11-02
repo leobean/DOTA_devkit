@@ -10,8 +10,8 @@ import math
     some basic functions which are useful for process DOTA data
 """
 
-wordname_15 = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
-               'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter']
+wordname_16 = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
+               'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter', 'container-crane']
 
 def custombasename(fullname):
     return os.path.basename(os.path.splitext(fullname)[0])
@@ -137,7 +137,7 @@ def groundtruth2Task1(srcpath, dstpath):
     filelist = GetFileFromThisRootDir(srcpath)
     # names = [custombasename(x.strip())for x in filelist]
     filedict = {}
-    for cls in wordname_15:
+    for cls in wordname_16:
         fd = open(os.path.join(dstpath, 'Task1_') + cls + r'.txt', 'w')
         filedict[cls] = fd
     for filepath in filelist:

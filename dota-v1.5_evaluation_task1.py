@@ -150,7 +150,9 @@ def voc_eval(detpath,
     detfile = detpath.format(classname)
     with open(detfile, 'r') as f:
         lines = f.readlines()
-
+    # if this class det file is empty, return 0
+    if not lines:
+        return 0,0,0
     splitlines = [x.strip().split(' ') for x in lines]
     image_ids = [x[0] for x in splitlines]
     confidence = np.array([float(x[1]) for x in splitlines])
@@ -261,9 +263,9 @@ def voc_eval(detpath,
 
 def main():
 
-    detpath = r'/home/dingjian/data/DOTA-v1.5/example/RoITrans/Task1_{:s}.txt'
-    annopath = r'/home/dingjian/code/DOAI_server2/media/DOTA15_Task1_gt/{:s}.txt'
-    imagesetfile = r'/home/dingjian/code/DOAI_server2/media/testset.txt'
+    detpath = r'/home/konglingbin/project/dota/CenterNet_oriented/exp/ctdet/resnet18/result_dota/Task1_{:s}.txt'
+    annopath = r'/data/konglingbin/DOTA/DOTA_oriented/train_small/labelTxt/{:s}.txt'
+    imagesetfile = r'/data/konglingbin/DOTA/DOTA_oriented/train_small/trainsmalltxt.txt'
 
     # detpath = r'PATH_TO_BE_CONFIGURED/Task1_{:s}.txt'
     # annopath = r'PATH_TO_BE_CONFIGURED/{:s}.txt' # change the directory to the path of val/labelTxt, if you want to do evaluation on the valset

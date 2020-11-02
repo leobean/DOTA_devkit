@@ -263,5 +263,5 @@ def mergebypoly(srcpath, dstpath):
               dstpath,
               py_cpu_nms_poly_fast)
 if __name__ == '__main__':
-    mergebypoly(r'path_to_configure', r'path_to_configure')
+    mergebypoly(r'/home/konglingbin/project/dota/Faster_RCNN_for_DOTA/output/rcnn/DOTA_quadrangle/DOTA_quadrangle/test/test_results', r'/home/konglingbin/project/dota/Faster_RCNN_for_DOTA/output/rcnn/DOTA_quadrangle/DOTA_quadrangle/test/test_results')
     # mergebyrec()

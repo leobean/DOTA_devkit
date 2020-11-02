@@ -57,7 +57,8 @@ def DOTA2COCO(srcpath, destfile):
                                          max(obj['poly'][0::2]), max(obj['poly'][1::2])
 
                 width, height = xmax - xmin, ymax - ymin
-                single_obj['bbox'] = xmin, ymin, width, height
+                # single_obj['bbox'] = xmin, ymin, width, height
+                single_obj['bbox'] = obj['poly']
                 single_obj['image_id'] = image_id
                 data_dict['annotations'].append(single_obj)
                 single_obj['id'] = inst_count
@@ -65,4 +66,4 @@ def DOTA2COCO(srcpath, destfile):
             image_id = image_id + 1
         json.dump(data_dict, f_out)
 if __name__ == '__main__':
-    DOTA2COCO(r'/data/konglingbin/DOTA/DOTA/DOTA512/train_split_gap100', r'/data/konglingbin/DOTA/DOTA/DOTA512/train_split_gap100/DOTA_train_split512_gap100_notempty.json')
+    DOTA2COCO(r'/data/konglingbin/DOTA/DOTA_oriented/train_only_one', r'/data/konglingbin/DOTA/DOTA_oriented/train_only_one/DOTA_train_only_one_split.json')

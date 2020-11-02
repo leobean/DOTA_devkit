@@ -12,7 +12,7 @@ import time
 import polyiou
 
 ## the thresh for nms when merge image
-nms_thresh = 0.3
+nms_thresh = 0.45
 
 def py_cpu_nms_poly(dets, thresh):
     scores = dets[:, 8]
@@ -114,6 +114,7 @@ def mergebase(srcpath, dstpath, nms):
                 pattern1 = re.compile(r'__\d+___\d+')
                 #print('subname:', subname)
                 x_y = re.findall(pattern1, subname)
+                #print(x_y)
                 x_y_2 = re.findall(r'\d+', x_y[0])
                 x, y = int(x_y_2[0]), int(x_y_2[1])
 
@@ -148,6 +149,8 @@ def mergebyrec(srcpath, dstpath):
     # srcpath = r'E:\bod-dataset\results\bod-v3_rfcn_2000000'
     # dstpath = r'E:\bod-dataset\results\bod-v3_rfcn_2000000_nms'
 
+    if not os.path.exists(dstpath):
+        os.makedirs(os.path.join(dstpath))
     mergebase(srcpath,
               dstpath,
               py_cpu_nms)
@@ -159,10 +162,13 @@ def mergebypoly(srcpath, dstpath):
     # srcpath = r'/home/dingjian/evaluation_task1/result/faster-rcnn-59/comp4_test_results'
     # dstpath = r'/home/dingjian/evaluation_task1/result/faster-rcnn-59/testtime'
 
+    if not os.path.exists(dstpath):
+        os.makedirs(os.path.join(dstpath))
+
     mergebase(srcpath,
               dstpath,
               py_cpu_nms_poly)
 if __name__ == '__main__':
     # see demo for example
-    mergebypoly(r'path_to_configure', r'path_to_configure')
+    mergebyrec(r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/fpnattention_resnet18_dota10_1024/result_dota', r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/fpnattention_resnet18_dota10_1024/result_dota_merge')
     # mergebyrec()

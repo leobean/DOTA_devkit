@@ -233,9 +233,9 @@ def main():
     # annopath = r'I:\dota\testset\ReclabelTxt-utf-8\{:s}.txt'
     # imagesetfile = r'I:\dota\testset\va.txt'
 
-    detpath = r'PATH_TO_BE_CONFIGURED/Task2_{:s}.txt'
-    annopath = r'PATH_TO_BE_CONFIGURED/{:s}.txt'# change the directory to the path of val/labelTxt, if you want to do evaluation on the valset
-    imagesetfile = r'PATH_TO_BE_CONFIGURED/valset.txt'
+    detpath = r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/fpnattention_resnet18_dota10_1024/result_dota_merge/Task2_{:s}.txt'
+    annopath = r'/data/konglingbin/DOTA/DOTA10/val/labelTxt/{:s}.txt'# change the directory to the path of val/labelTxt, if you want to do evaluation on the valset
+    imagesetfile = r'/data/konglingbin/DOTA/DOTA10/val/valset.txt'
 
     classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
                 'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter']
@@ -264,5 +264,8 @@ def main():
     print('map:', map)
     classaps = 100*np.array(classaps)
     print('classaps: ', classaps)
+    print("map:%.5f"%map)
+    for i in range(0,15):
+        print("%s:%.5f"%(classnames[i], classaps[i]))
 if __name__ == '__main__':
     main()

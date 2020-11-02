@@ -16,6 +16,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+class_wh = {}  # each class object's width or height
+
 def parse_gt(filename):
     objects = []
     with open(filename, 'r') as f:
@@ -38,6 +40,10 @@ def parse_gt(filename):
             w = int(float(splitline[4])) - int(float(splitline[0]))
             h = int(float(splitline[5])) - int(float(splitline[1]))
             object_struct['area'] = w * h
+            if object_struct['name'] not in class_wh.keys():
+                class_wh[object_struct['name']] = [w]
+            else:
+                class_wh[object_struct['name']].append(w)
             #print('area:', object_struct['area'])
             # if object_struct['area'] < (15 * 15):
             #     #print('area:', object_struct['area'])
@@ -147,96 +153,15 @@ def voc_eval(detpath,
                                  'difficult': difficult,
                                  'det': det}
 
-    # read dets
-    detfile = detpath.format(classname)
-    with open(detfile, 'r') as f:
-        lines = f.readlines()
-
-    splitlines = [x.strip().split(' ') for x in lines]
-    image_ids = [x[0] for x in splitlines]
-    confidence = np.array([float(x[1]) for x in splitlines])
-
-    if not lines:
-        return 0,0,0
-
-    #print('check confidence: ', confidence)
-
-    BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
-
-    # sort by confidence
-    sorted_ind = np.argsort(-confidence)
-    sorted_scores = np.sort(-confidence)
-
-    #print('check sorted_scores: ', sorted_scores)
-    #print('check sorted_ind: ', sorted_ind)
-    BB = BB[sorted_ind, :]
-    image_ids = [image_ids[x] for x in sorted_ind]
-    #print('check imge_ids: ', image_ids)
-    #print('imge_ids len:', len(image_ids))
-    # go down dets and mark TPs and FPs
-    nd = len(image_ids)
-    tp = np.zeros(nd)
-    fp = np.zeros(nd)
-    for d in range(nd):
-        R = class_recs[image_ids[d]]
-        bb = BB[d, :].astype(float)
-        ovmax = -np.inf
-        BBGT = R['bbox'].astype(float)
-
-        if BBGT.size > 0:
-            # compute overlaps
-            # intersection
-            ixmin = np.maximum(BBGT[:, 0], bb[0])
-            iymin = np.maximum(BBGT[:, 1], bb[1])
-            ixmax = np.minimum(BBGT[:, 2], bb[2])
-            iymax = np.minimum(BBGT[:, 3], bb[3])
-            iw = np.maximum(ixmax - ixmin + 1., 0.)
-            ih = np.maximum(iymax - iymin + 1., 0.)
-            inters = iw * ih
-
-            # union
-            uni = ((bb[2] - bb[0] + 1.) * (bb[3] - bb[1] + 1.) +
-                   (BBGT[:, 2] - BBGT[:, 0] + 1.) *
-                   (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)
-
-            overlaps = inters / uni
-            ovmax = np.max(overlaps)
-            ## if there exist 2
-            jmax = np.argmax(overlaps)
-
-        if ovmax > ovthresh:
-            if not R['difficult'][jmax]:
-                if not R['det'][jmax]:
-                    tp[d] = 1.
-                    R['det'][jmax] = 1
-                else:
-                    fp[d] = 1.
-                   # print('filename:', image_ids[d])
-        else:
-            fp[d] = 1.
-
-    # compute precision recall
-
-    print('check fp:', fp)
-    print('check tp', tp)
-
 
     print('npos num:', npos)
-    fp = np.cumsum(fp)
-    tp = np.cumsum(tp)
 
-    rec = tp / float(npos)
-    # avoid divide by zero in case the first detection matches a difficult
-    # ground truth
-    prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
-    ap = voc_ap(rec, prec, use_07_metric)
-
-    return rec, prec, ap
+    return 0
 
 def main():
-    detpath = r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/gap512_resnet18_mixgaussion/result_dota/Task2_{:s}.txt'
-    annopath = r'/data/konglingbin/DOTA/DOTA/DOTA512/val_split_gap100/labelTxt/{:s}.txt'
-    imagesetfile = r'/data/konglingbin/DOTA/DOTA/DOTA512/val_split_gap100/filename.txt'
+    detpath = r'E:\DOTA\test\result_dota1021\Task2_{:s}.txt'
+    annopath = r'E:\DOTA\val\labelTxt-v1.5\DOTA-v1.5_val_hbb\{:s}.txt'
+    imagesetfile = r'E:\DOTA\val\labelTxt-v1.0\Val_Task2_gt\LIST.TXT'
 
     # detpath = r'PATH_TO_BE_CONFIGURED/Task2_{:s}.txt'
     # annopath = r'PATH_TO_BE_CONFIGURED/{:s}.txt'# change the directory to the path of val/labelTxt, if you want to do evaluation on the valset
@@ -251,16 +176,19 @@ def main():
     map = 0
     for classname in classnames:
         print('classname:', classname)
-        rec, prec, ap = voc_eval(detpath,
+        te = voc_eval(detpath,
              annopath,
              imagesetfile,
              classname,
              ovthresh=0.5,
              use_07_metric=True)
-        map = map + ap
-        #print('rec: ', rec, 'prec: ', prec, 'ap: ', ap)
-        print('ap: ', ap)
-        classaps.append(ap)
+		
+        plt.hist(class_wh[classname], bins='auto')
+        plt.xticks(np.arange(0, max(class_wh[classname]), 10.0))
+        plt.ylabel(classname)
+        # plt.xlim(right = max(class_wh[classname])/3)
+        plt.show()
+
 
         ## uncomment to plot p-r curve for each category
         # plt.figure(figsize=(8,4))
@@ -268,9 +196,7 @@ def main():
         # plt.ylabel('precision')
         # plt.plot(rec, prec)
         # plt.show()
-    map = map/len(classnames)
-    print('map:', map)
-    classaps = 100*np.array(classaps)
-    print('classaps: ', classaps)
+
 if __name__ == '__main__':
     main()
+
