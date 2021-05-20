@@ -170,5 +170,5 @@ def mergebypoly(srcpath, dstpath):
               py_cpu_nms_poly)
 if __name__ == '__main__':
     # see demo for example
-    mergebyrec(r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/fpnattention_resnet18_dota10_1024/result_dota', r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/fpnattention_resnet18_dota10_1024/result_dota_merge')
+    mergebyrec(r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/graduate_demo/result_dota', r'/home/konglingbin/project/dota/CenterNet/exp/ctdet/graduate_demo/result_dota_merge')
     # mergebyrec()
